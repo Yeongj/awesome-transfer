@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Responsive, Menu, Segment, Icon } from 'semantic-ui-react'
+import { Route, NavLink, Link, HashRouter } from "react-router-dom";
 
 class MenuHeader extends Component {
   state = {}
@@ -7,12 +8,14 @@ class MenuHeader extends Component {
   constructor(props) {
     super(props);
     this.handleItemClick = this.handleItemClick.bind(this);
-    this.state = {activeItem: ''};
+    this.state = {
+      activeItem: '',
+      isActive: false
+    };
   }
 
-  async handleItemClick(e, { name })  {
-    await this.setState({ activeItem: name })
-    console.log(this.state.activeItem)
+  handleItemClick(e, { name }) {
+    this.setState({ activeItem: name })
   }
 
   ResponsiveBreakpoints() {
@@ -43,21 +46,26 @@ class MenuHeader extends Component {
     return (
       <Segment inverted>
         <Menu inverted stackable>
+          <HashRouter>
           <Menu.Item header>
-            <Icon name='home' active={activeItem === 'home'} onClick={this.handleItemClick}/>
+            <Icon name='home'/>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to="/">aboutUs</NavLink>
+          </Menu.Item>
+          <Menu.Item name='jobs' onClick={this.handleItemClick} >
+            <NavLink to="/Table">aboutUs</NavLink>
           </Menu.Item>
           <Menu.Item
-            name='aboutUs'
-            active={activeItem === 'aboutUs'}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item name='jobs' active={activeItem === 'jobs'} onClick={this.handleItemClick} />
-          <Menu.Item
             name='locations'
-            active={activeItem === 'locations'}
             onClick={this.handleItemClick}
-          />
+          >
+            <NavLink to="/Gallary">
+              locations
+            </NavLink>
+          </Menu.Item>
           {/* {this.ResponsiveBreakpoints()} */}
+          </HashRouter>
         </Menu>
       </Segment>
     )

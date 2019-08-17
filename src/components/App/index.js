@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import ReactDOM from 'react-dom';
+import { Route, NavLink, HashRouter } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import './App.css';
+import MenuHeader from '../Navbar';
+import Table from '../Table';
+import Gallary from "../Gallary";
+
+//  ReactDOM.render(<MenuHeader />, document.getElementById('Navbar'))
+
+class App extends Component {
+  render() {
+      return (
+        <HashRouter >
+          <MenuHeader />
+          {/* The corresponding component will show here if the current URL matches the path */}
+          <Route path="/"/>
+          <Route path="/Table" component={Table} />
+          <Route path="/Gallary" component={Gallary} />
+        </HashRouter>
+      );
+    }
 }
 
 export default App;

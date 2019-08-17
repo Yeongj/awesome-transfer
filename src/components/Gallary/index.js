@@ -1,25 +1,29 @@
 import React from 'react';
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Image from 'react-bootstrap/Image'
+import { Grid, Image} from 'semantic-ui-react'
 
-class gallary extends React.Component {
-  renderRoundedImage () {
-    return  <Image src="holder.js/171x180" rounded />
+class Gallary extends React.Component {
+  state = {
+    userInput: ['https://react.semantic-ui.com/images/wireframe/square-image.png', 'https://react.semantic-ui.com/images/wireframe/square-image.png'],
+  };
+
+  constructor() {
+    super()
+    this.renderImageGrid = this.renderImageGrid.bind(this)
+  }
+
+  renderImageGrid () {
+    return this.state.userInput.map(function(item){
+      return (<Grid.Column><Image src={item} size='tiny' rounded='true'/></Grid.Column>)
+    });
   }
 
   render() {
     return (
-      <Container>
-        <Row>
-          <Col xs={6} md={4}>
-            {this.renderRoundedImage()}
-          </Col>
-        </Row>
-      </Container>
+      <Grid centered container columns={6}>
+        {this.renderImageGrid()}
+      </Grid>
     )
   }
 }
 
-export default gallary;
+export default Gallary;
