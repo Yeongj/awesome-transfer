@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Responsive, Menu, Segment, Icon } from 'semantic-ui-react'
 import { Route, NavLink, Link, HashRouter } from "react-router-dom";
+import logo from "../App/logo.svg";
+import "../App/App.css";
 
 class MenuHeader extends Component {
   state = {}
@@ -49,9 +51,10 @@ class MenuHeader extends Component {
           <HashRouter>
           <Menu.Item header>
             <Icon name='home'/>
+            {/* <img src={logo} className="App-logo" alt="logo" /> */}
           </Menu.Item>
-          <Menu.Item>
-            <NavLink to="/">aboutUs</NavLink>
+          <Menu.Item name='Api' onClick={this.handleItemClick}>
+            <NavLink to="/Api">aboutUs</NavLink>
           </Menu.Item>
           <Menu.Item name='jobs' onClick={this.handleItemClick} >
             <NavLink to="/Table">aboutUs</NavLink>
