@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import logo from "../components/App/logo.svg";
 import "../components/App/App.css";
+import ReactDOM from 'react-dom';
 
 class Api extends Component {
     constructor(props) {

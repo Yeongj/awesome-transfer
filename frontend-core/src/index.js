@@ -13,7 +13,7 @@ ReactDOM.render(
         <App />
       </Switch>
     </BrowserRouter>,
-    document.getElementById('app')
+    document.getElementById('nav')
   );
 
 // If you want your app to work offline and load faster, you can change

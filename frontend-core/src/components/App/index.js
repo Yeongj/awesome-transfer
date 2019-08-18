@@ -8,20 +8,18 @@ import Api from '../rrrrr';
 import Table from '../Table';
 import Gallary from "../Gallary";
 
-//  ReactDOM.render(<MenuHeader />, document.getElementById('Navbar'))
-
 class App extends Component {
   render() {
-      return (
-        <HashRouter >
-          <MenuHeader />
-          {/* The corresponding component will show here if the current URL matches the path */}
-          <Route path="/Api" component={Api}/>
-          <Route path="/Table" component={Table} />
-          <Route path="/Gallary" component={Gallary} />
-        </HashRouter>
-      );
-    }
+    return (
+      <HashRouter >
+        <MenuHeader />
+        {/* The corresponding component will show here if the current URL matches the path */}
+        <Route path="/Api" component={Api}/>
+        <Route path="/Table" component={Table} />
+        <Route path="/Gallary" component={Gallary} />
+      </HashRouter>
+    );
+  }
 }
 
 export default App;

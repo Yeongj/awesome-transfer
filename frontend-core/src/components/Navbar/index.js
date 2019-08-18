@@ -47,7 +47,7 @@ class MenuHeader extends Component {
 
     return (
       <Segment inverted>
-        <Menu inverted stackable>
+        <Menu inverted fixed="top">
           <HashRouter>
           <Menu.Item header>
             <Icon name='home'/>
