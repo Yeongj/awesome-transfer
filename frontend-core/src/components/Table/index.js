@@ -15,7 +15,7 @@ class myTable extends React.Component {
   
   handleHeaderChecked () {
     this.setState({ 
-      checked: !this.state.checked || !this.state.headerchecked,
+      checked: !this.state.checked || this.state.headerchecked,
       headerchecked: !this.state.headerchecked
      });
   }
@@ -26,33 +26,44 @@ class myTable extends React.Component {
 
   renderFolder() {
     return (
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell >
-          Hold Row
-          </Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>)
+      <Table.Row>
+        <Table.HeaderCell colSpan='12'>
+        Hold Row
+        </Table.HeaderCell>
+      </Table.Row>)
   }
 
   renderHead() {
     return (
     <Table.Header>
+      {this.renderFolder()}
       <Table.Row>
         <Table.HeaderCell >
-        <Button compact size='small' floated='right' onClick={this.handleHeaderChecked}>
+        <Button compact="true" size='small' floated='right' onClick={this.handleHeaderChecked}>
           Select All
         </Button>
-          {/* <Checkbox name='headerCheckBox' onClick={this.handleHeaderChecked}/> */}
         </Table.HeaderCell>
-        <Table.HeaderCell compact>Type</Table.HeaderCell>
+        {/* <Table.HeaderCell compact="true">Type</Table.HeaderCell> */}
         <Table.HeaderCell >Name</Table.HeaderCell>
         <Table.HeaderCell >Options</Table.HeaderCell>
       </Table.Row>
     </Table.Header>)
   }
   
-  renderRow() {
+  renderFolderRow() {
+    const { checked } = this.state
+
+    return (
+      <Table.Row textAlign='center'>
+        <Table.Cell collapsing>
+          <Checkbox disabled/>
+        </Table.Cell>
+        <Table.Cell ><Icon name='folder' /> <a href='#'>folder</a></Table.Cell>
+        <Table.Cell> 10 hours ago</Table.Cell>
+      </Table.Row>
+    )
+  }
+  renderPhotoRow() {
     const { checked } = this.state
 
     return (
@@ -60,8 +71,20 @@ class myTable extends React.Component {
         <Table.Cell collapsing>
           <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
         </Table.Cell>
-        <Table.Cell collapsing><Icon name='folder' /></Table.Cell>
-        <Table.Cell> Name</Table.Cell>
+        <Table.Cell ><Icon name='image' /> <a href='#'>photo</a></Table.Cell>
+        <Table.Cell> 10 hours ago</Table.Cell>
+      </Table.Row>
+    )
+  }
+  renderOthersRow() {
+    const { checked } = this.state
+
+    return (
+      <Table.Row textAlign='center'>
+        <Table.Cell collapsing>
+          <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
+        </Table.Cell>
+        <Table.Cell ><Icon name='file' /> <a href='#'>others</a></Table.Cell>
         <Table.Cell> 10 hours ago</Table.Cell>
       </Table.Row>
     )
@@ -70,11 +93,11 @@ class myTable extends React.Component {
   renderBody() {
     return (
       <Table.Body>
-      {this.renderRow()}
-      {this.renderRow()}
-      {this.renderRow()}
-      {this.renderRow()}
-      {this.renderRow()}
+      {this.renderFolderRow()}
+      {this.renderFolderRow()}
+      {this.renderPhotoRow()}
+      {this.renderPhotoRow()}
+      {this.renderOthersRow()}
       </Table.Body>
       )
   }
@@ -84,8 +107,7 @@ class myTable extends React.Component {
       <Grid centered>
         <Grid.Column width={12}>
           <Segment>
-            <Table celled striped>
-              {this.renderFolder()}
+            <Table celled structured>
               {this.renderHead()}
               {this.renderBody()}
             </Table>

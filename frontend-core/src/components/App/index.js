@@ -4,9 +4,9 @@ import { Route, NavLink, HashRouter } from "react-router-dom";
 
 import './App.css';
 import MenuHeader from '../Navbar';
-import Api from '../rrrrr';
+import Api from '../Init';
 import Table from '../Table';
-import Gallary from "../Gallary";
+import Gallery from "../Gallery";
 
 class App extends Component {
   render() {
@@ -16,7 +16,7 @@ class App extends Component {
         {/* The corresponding component will show here if the current URL matches the path */}
         <Route path="/Api" component={Api}/>
         <Route path="/Table" component={Table} />
-        <Route path="/Gallary" component={Gallary} />
+        <Route path="/Gallery" component={Gallery} />
       </HashRouter>
     );
   }
