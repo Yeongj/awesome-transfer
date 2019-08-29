@@ -7,7 +7,10 @@ const file = require('./file');
 const multer = require('multer');
 var upload = multer()
 
+const settings = require('./settings');
+
 app.use(cors());
+app.use(express.json())
 
 app.get('/', function(req, res, next) {
     res.send('Hello World!');
@@ -17,8 +20,17 @@ app.get('/health', function(req, res, next) {
     res.send('OK');
 })
 
-app.get('/getVolumeList', function(req, res, next) {
-    res.send(file.getVolumeList('./'))
+app.get('/settings', async function(req, res, next) {
+    let result = await settings.get() 
+    result ? res.json(result) : res.sendStatus(500);
+})
+
+app.post('/settings', async function(req, res, next) {
+    await settings.set(req.body) ? res.end('OK') : res.sendStatus(500);
+})
+
+app.get('/getVolumeList', async function(req, res, next) {
+    res.send(await file.getVolumeList('./'))
 })
 
 app.get('/getFileDetail', function(req, res, next) {

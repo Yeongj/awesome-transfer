@@ -1,26 +1,30 @@
 const os = require('os');
 const fs = require('fs');
+const fsPromises = fs.promises;
+const path = require('path');
+const utils = require('./utils');
 
-function getVolumeList(path) {
+async function getVolumeList(directory) {
     try{
-        return fs.readdirSync(path).map(function(item) {
+        let dirinfo = await fsPromises.readdir(directory)
+        return Promise.all(dirinfo.map( async function(item) {
             let file = __dirname +'/'+ item;
             let info = fs.statSync(file);
             return {
                 name: file,
                 size: info.size,
                 create: info.birthtime,
-                type: info.isDirectory() ? 'd' : info.isFile() ? 'f' : 'o',
+                type: info.isDirectory() ? 'd' : await utils.getFileType( path.extname(file) ),
                 detail: info
             }
-        });
+        }));        
     } catch (err) {
         console.error('[ERROR] getVolumeList error.', err);
         return {};
     }    
 }
 
-function uploadFile(req) {
+async function uploadFile(req) {
     const files = req.files
     console.log(files)
     var img = fs.readFileSync(req.files.path);
@@ -38,13 +42,32 @@ function uploadFile(req) {
     
        console.log('saved to database')
        res.redirect('/')
-      
-        
      })
+}
+
+async function rename(oldPath, newPath) {
+    try {
+        await fsPromises.rename(oldPath, newPath);
+        return true;
+    } catch (err) {
+        console.error('[ERROR] file rename error.', err);
+        return false;
+    }
+}
+
+async function copy(src, dest) {
+    try {
+        await fsPromises.copyFile(src, dest)
+        return true;
+    } catch (err) {
+        console.error('[ERROR] file copy error.', err);
+        return false;
+    }
 }
 
 module.exports = {
     getVolumeList: getVolumeList,
-    getFileDetail: getFileDetail,
-    uploadFile: uploadFile
+    uploadFile: uploadFile,
+    rename: rename,
+    copy: copy
 };
