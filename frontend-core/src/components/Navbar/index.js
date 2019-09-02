@@ -84,7 +84,7 @@ import Api from '../Init';
 
 class Navbar extends Component {
   items = [
-    { key: 'header', header:true, content: <Icon name='home'/>},
+    { key: 'header', header:true, content: <Icon name='add'/>},
     { key: 'Api', active: true, name: 'Api', onClick: this.handleItemClick},
     { key: 'Table', name: 'Table', onClick: this.handleItemClick},
     { key: 'Gallery', name: 'Gallery', onClick: this.handleItemClick},

@@ -1,16 +1,17 @@
 import React from 'react'
-import { Segment, Grid, Icon, Table, Checkbox, Button } from 'semantic-ui-react'
+import { Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb } from 'semantic-ui-react'
 
 class myTable extends React.Component {
   state = {
     headerchecked: false,
-    checked: false
+    checked: false,
   }
 
   constructor() {
     super();
     this.handleHeaderChecked = this.handleHeaderChecked.bind(this); // set this, because you need get methods from CheckBox 
     this.toggle = this.toggle.bind(this);
+    this.renderRow = this.renderRow.bind(this);
   }
   
   handleHeaderChecked () {
@@ -24,13 +25,41 @@ class myTable extends React.Component {
     this.setState(prevState => ({ checked: !prevState.checked })) 
   }
 
-  renderFolder() {
+  callAPI() {
+    fetch("http://localhost:3001/getVolumeList")
+        .then(res => res.json())
+        .then(res => this.setState({ apiResponse: res }))
+        .then(res => this.render());
+  }
+
+  componentDidMount() {
+    this.callAPI();
+  }
+
+  renderFolder(item) {
+    if (!this.state.apiResponse) return (<Table.Row></Table.Row>)
+    var dirpath = Object.keys(this.state.apiResponse)[0].split('/');
     return (
       <Table.Row>
         <Table.HeaderCell colSpan='12'>
-        Hold Row
+        <Breadcrumb>
+          {this.renderFolderRoute(dirpath)}
+        </Breadcrumb>
         </Table.HeaderCell>
       </Table.Row>)
+  }
+
+  renderFolderRoute(dirpath) {
+    let result = [];
+    dirpath.forEach((item, i) => {
+      if (i === dirpath.length-1) { 
+        result.push(<Breadcrumb.Section key={i} active>{item}</Breadcrumb.Section>)
+        return result;
+      }
+      result.push(<Breadcrumb.Section key={i} link>{item}</Breadcrumb.Section>)
+      result.push(<Breadcrumb.Divider key={'d'+i}/>)
+      });
+    return result;
   }
 
   renderHead() {
@@ -50,54 +79,65 @@ class myTable extends React.Component {
     </Table.Header>)
   }
   
-  renderFolderRow() {
-    const { checked } = this.state
-
+  renderFolderRow(item, i) {
     return (
-      <Table.Row textAlign='center'>
+      <Table.Row key={i} textAlign='center'>
         <Table.Cell collapsing>
           <Checkbox disabled/>
         </Table.Cell>
-        <Table.Cell ><Icon name='folder' /> <a href='#'>folder</a></Table.Cell>
-        <Table.Cell> 10 hours ago</Table.Cell>
+        <Table.Cell ><Icon name='folder' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )
   }
-  renderPhotoRow() {
+  renderPhotoRow(item, i) {
     const { checked } = this.state
 
     return (
-      <Table.Row textAlign='center'>
+      <Table.Row key={i} textAlign='center'>
         <Table.Cell collapsing>
           <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
         </Table.Cell>
-        <Table.Cell ><Icon name='image' /> <a href='#'>photo</a></Table.Cell>
-        <Table.Cell> 10 hours ago</Table.Cell>
+        <Table.Cell ><Icon name='image' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )
   }
-  renderOthersRow() {
+  renderOthersRow(item, i) {
     const { checked } = this.state
 
     return (
-      <Table.Row textAlign='center'>
+      <Table.Row key={i} textAlign='center'>
         <Table.Cell collapsing>
           <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
         </Table.Cell>
-        <Table.Cell ><Icon name='file' /> <a href='#'>others</a></Table.Cell>
-        <Table.Cell> 10 hours ago</Table.Cell>
+        <Table.Cell ><Icon name='file' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )
+  }
+
+  renderRow() {
+    if (!this.state.apiResponse) return 
+    var dirpath_arr = Object.values(this.state.apiResponse)[0];
+    return dirpath_arr.map((item, i) => {
+      switch (item.type) {
+        case 'd':
+          return this.renderFolderRow(item, i);
+        case 'i':
+          return this.renderPhotoRow(item, i);
+        case 'v':
+          return this.renderPhotoRow(item, i);
+        default:
+          return this.renderOthersRow(item, i);
+      }
+    })
   }
 
   renderBody() {
     return (
       <Table.Body>
-      {this.renderFolderRow()}
-      {this.renderFolderRow()}
-      {this.renderPhotoRow()}
-      {this.renderPhotoRow()}
-      {this.renderOthersRow()}
+        {this.renderRow()}
       </Table.Body>
       )
   }
