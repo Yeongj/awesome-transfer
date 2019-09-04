@@ -1,94 +1,22 @@
-/*import React, { Component } from 'react'
-import { Responsive, Menu, Segment, Icon } from 'semantic-ui-react'
-import { Route, NavLink, Link, HashRouter } from "react-router-dom";
-import logo from "../App/logo.svg";
-import "../App/App.css";
-
-class MenuHeader extends Component {
-  state = {}
-
-  constructor(props) {
-    super(props);
-    this.handleItemClick = this.handleItemClick.bind(this);
-    this.state = {
-      activeItem: '',
-      isActive: false
-    };
-  }
-
-  handleItemClick(e, { name }) {
-    this.setState({ activeItem: name })
-  }
-
-  ResponsiveBreakpoints() {
-    return (
-      <Segment.Group>
-        <Responsive as={Segment} {...Responsive.onlyMobile}>
-          Mobile
-        </Responsive>
-        <Responsive as={Segment} {...Responsive.onlyTablet}>
-          Tablet
-        </Responsive>
-        <Responsive as={Segment} {...Responsive.onlyComputer}>
-          Computer
-        </Responsive>
-        <Responsive as={Segment} {...Responsive.onlyLargeScreen}>
-          Large Screen
-        </Responsive>
-        <Responsive as={Segment} {...Responsive.onlyWidescreen}>
-          Widescreen
-        </Responsive>
-      </Segment.Group>
-    )
-  }
-
-  render() {
-    const { activeItem } = this.state
-
-    return (
-      <Segment inverted>
-        <Menu inverted fixed="top">
-          <HashRouter>
-          <Menu.Item header>
-            <Icon name='home'/>
-            {/* <img src={logo} className="App-logo" alt="logo" /> }
-          </Menu.Item>
-          <Menu.Item name='Api' onClick={this.handleItemClick}>
-            <NavLink to="/Api">aboutUs</NavLink>
-          </Menu.Item>
-          <Menu.Item name='jobs' onClick={this.handleItemClick} >
-            <NavLink to="/Table">aboutUs</NavLink>
-          </Menu.Item>
-          <Menu.Item
-            name='locations'
-            onClick={this.handleItemClick}
-          >
-            <NavLink to="/Gallary">
-              locations
-            </NavLink>
-          </Menu.Item>
-          {/* {this.ResponsiveBreakpoints()} }
-          </HashRouter>
-        </Menu>
-      </Segment>
-    )
-  }
-}*/
-
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom';
-import { Menu, Icon } from 'semantic-ui-react'
+import { Menu, Icon, Modal, Header, Button, Popup } from 'semantic-ui-react'
 import Table from '../Table';
 import Gallery from '../Gallery';
 import Api from '../Init';
 
 class Navbar extends Component {
-  items = [
-    { key: 'header', header:true, content: <Icon name='add'/>},
-    { key: 'Api', active: true, name: 'Api', onClick: this.handleItemClick},
-    { key: 'Table', name: 'Table', onClick: this.handleItemClick},
-    { key: 'Gallery', name: 'Gallery', onClick: this.handleItemClick},
-  ]
+  state = {
+    items: [],
+    modalOpen: false
+  }
+
+  constructor() {
+    super();
+    this.handleItemClick = this.handleItemClick.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+  }
 
   handleItemClick(e, {name}) {
     if (name === 'Api') ReactDOM.render(<Api />,document.getElementById('app'));
@@ -96,8 +24,115 @@ class Navbar extends Component {
     if (name === 'Gallery') ReactDOM.render(<Gallery />,document.getElementById('app'));
   };
 
+  handleOpen() { this.setState({modalOpen: true}); }
+  handleClose() { this.setState({modalOpen: false}); }
+
+  renderMenuItem(name) {
+    return (<Menu.Item
+      name={name}
+      onClick={this.handleItemClick}
+    >
+    {name}
+    </Menu.Item>)
+  }
+  renderModalIcon() {
+    return (<Icon.Group >
+        <Icon size='large' name='folder outline' />
+        <Icon corner name='add' />
+      </Icon.Group>)
+  }
+
+  showFolderModal() {
+    return (
+    <Modal centered open={this.state.modalOpen}
+      onClose={this.handleClose}
+      basic
+      size='small'
+    >
+      <Header icon={this.renderModalIcon()} content='Select a folder.' />
+      <Modal.Content>
+        <p>
+          aaaaaaa
+        </p>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button basic color='red' inverted>
+          <Icon name='remove' /> No
+        </Button>
+        <Button color='green' inverted>
+          <Icon name='checkmark' /> Yes
+        </Button>
+      </Modal.Actions>
+    </Modal>)
+  }
+
   render() {
-    return (<Menu fixed={'top'} inverted={true} items={this.items} />);
+    return [this.showFolderModal(),
+    (<Menu fixed="top" inverted={true}>
+        <Menu.Item
+          name='add'
+          onClick={this.handleOpen}
+        >
+          <Popup
+            trigger={<Icon name='add'/>}
+            content="add one"
+            basic
+          />
+        </Menu.Item>
+        <Menu.Item
+          name='minus'
+          onClick={this.handleOpen}
+        >
+          <Popup
+            trigger={<Icon name='minus'/>}
+            content="remove one"
+            basic
+          />
+        </Menu.Item>
+        <Menu.Item
+          name='Api'
+          onClick={this.handleItemClick}
+        >
+          Api
+        </Menu.Item>
+        <Menu.Item
+          name='Table'
+          onClick={this.handleItemClick}
+        >
+          Table
+        </Menu.Item>
+        <Menu.Item
+          name='Gallery'
+          onClick={this.handleItemClick}
+        >
+          Gallery
+        </Menu.Item>
+        
+        <Menu.Menu position='right'>
+        <Menu.Item
+          name='list'
+          onClick={this.handleItemClick}
+        >
+          <Popup
+            trigger={<Icon name="unordered list"></Icon>}
+            content="list"
+            basic
+          />
+        </Menu.Item>
+
+        <Menu.Item
+          name='grid'
+          onClick={this.handleItemClick}
+        >
+          <Popup
+            trigger={<Icon name="grid layout"></Icon>}
+            content="grid"
+            basic
+          />
+        </Menu.Item>
+      </Menu.Menu>
+    </Menu>)
+    ]
   }
 }
 

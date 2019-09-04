@@ -25,9 +25,9 @@ class Init extends Component {
                     <input name="foo" type="file" />
                     <input type='submit' value='Upload!' />
                 </form>
-                <form action="/profile" method="post" enctype="multipart/form-data">
+                {/* <form action="/profile" method="post" enctype="multipart/form-data">
                     <input type="file" name="avatar" multiple/>
-                </form>
+                </form> */}
             </div>
         );
     }

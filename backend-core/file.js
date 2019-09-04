@@ -7,18 +7,18 @@ const utils = require('./utils');
 async function getVolumeList(directory) {
     try{
         let result = {};
-        let dirinfo = await fsPromises.readdir(directory);
-        result[__dirname] = [];
+        let dirinfo = await fsPromises.readdir(__dirname+directory);
+        result[__dirname+directory] = [];
         await Promise.all(dirinfo.map( async function(item) {
-            let file = __dirname +'/'+ item;
+            let file = __dirname+directory +'/'+ item;
             let info = fs.statSync(file);
-            result[__dirname].push({
-                name: item,
-                size: info.size,
-                create: info.birthtime,
-                type: info.isDirectory() ? 'd' : await utils.getFileType( path.extname(file) ),
-                detail: info
-            })
+                result[__dirname+directory].push({
+                    name: item,
+                    size: info.size,
+                    create: info.birthtime,
+                    type: info.isDirectory() ? 'd' : await utils.getFileType( path.extname(file) ),
+                    detail: info
+                })
         }));
         return result;        
     } catch (err) {

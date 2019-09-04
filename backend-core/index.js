@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require("cors");
 const app = express();
 const port = 3001
+const fs = require('fs')
 
 const file = require('./file');
 const multer = require('multer');
@@ -11,6 +12,7 @@ const settings = require('./settings');
 
 app.use(cors());
 app.use(express.json())
+app.use(express.static(__dirname));
 
 app.get('/', function(req, res, next) {
     res.send('Hello World!');
@@ -30,12 +32,23 @@ app.post('/settings', async function(req, res, next) {
 })
 
 app.get('/getVolumeList', async function(req, res, next) {
-    res.send(await file.getVolumeList('./'))
+    const {src='./'} = req.query;
+    res.send(await file.getVolumeList(src))
 })
 
 app.get('/getFileDetail', function(req, res, next) {
 
-    res.send('Hello World! getFileDetail')
+    // var type = mime[path.extname(file).slice(1)] || 'text/plain';
+    var s = fs.createReadStream(__dirname+'/images/test.jpg');
+    s.on('open', function () {
+        res.set('Content-Type', 'image/jpeg');
+        s.pipe(res);
+    });
+    s.on('error', function () {
+        res.set('Content-Type', 'text/plain');
+        res.status(404).end('Not found');
+    });
+    // res.send('Hello World! getFileDetail')
 })
 
 app.get('/rename', function(req, res, next) {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb } from 'semantic-ui-react'
+import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image } from 'semantic-ui-react'
 
 class myTable extends React.Component {
   state = {
@@ -26,7 +26,7 @@ class myTable extends React.Component {
   }
 
   callAPI() {
-    fetch("http://localhost:3001/getVolumeList")
+    fetch("http://localhost:3001/getVolumeList?src=/images")
         .then(res => res.json())
         .then(res => this.setState({ apiResponse: res }))
         .then(res => this.render());
@@ -45,6 +45,13 @@ class myTable extends React.Component {
         <Breadcrumb>
           {this.renderFolderRoute(dirpath)}
         </Breadcrumb>
+        <Button.Group floated='right'>
+          <Button>All</Button>
+          <Button.Or />
+          <Button>Files Only</Button>
+          <Button.Or />
+          <Button>Images Only</Button>
+        </Button.Group>
         </Table.HeaderCell>
       </Table.Row>)
   }
@@ -85,7 +92,14 @@ class myTable extends React.Component {
         <Table.Cell collapsing>
           <Checkbox disabled/>
         </Table.Cell>
-        <Table.Cell ><Icon name='folder' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell >
+          <Header>
+            <Icon name='folder' />
+            <Header.Content>
+            <a href='#'>{item.name}</a>
+            </Header.Content>
+          </Header>
+        </Table.Cell>
         <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )
@@ -98,7 +112,14 @@ class myTable extends React.Component {
         <Table.Cell collapsing>
           <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
         </Table.Cell>
-        <Table.Cell ><Icon name='image' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell >
+          <Header>
+            <Image src='http://localhost:3001/images/test.jpg' rounded size='mini' /> 
+            <Header.Content>
+            <a href='#'>{item.name}</a>
+            </Header.Content>
+          </Header>
+        </Table.Cell>
         <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )
@@ -111,7 +132,14 @@ class myTable extends React.Component {
         <Table.Cell collapsing>
           <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
         </Table.Cell>
-        <Table.Cell ><Icon name='file' /> <a href='#'>{item.name}</a></Table.Cell>
+        <Table.Cell >
+          <Header>
+            <Icon name='file' />
+            <Header.Content>
+            <a href='#'>{item.name}</a>
+            </Header.Content>
+          </Header>
+        </Table.Cell>
         <Table.Cell>{item.create}</Table.Cell>
       </Table.Row>
     )

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Image, Card, Icon } from 'semantic-ui-react'
+import { Grid, Image, Card, Icon, Segment } from 'semantic-ui-react'
 
 class Gallery extends React.Component {
   state = {
@@ -59,9 +59,13 @@ class Gallery extends React.Component {
 
   render() {
     return (
-      <Grid centered container columns={6}>
-        {/* {this.renderImageGrid()} */}
-        {this.CardExampleColumnCount()}
+      <Grid centered columns={6}>
+        <Grid.Column width={12}>
+          <Segment>
+            {/* {this.renderImageGrid()} */}
+            {this.CardExampleColumnCount()}
+          </Segment>
+        </Grid.Column>
       </Grid>
     )
   }
