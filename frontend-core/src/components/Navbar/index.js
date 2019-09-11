@@ -19,9 +19,22 @@ class Navbar extends Component {
   }
 
   handleItemClick(e, {name}) {
-    if (name === 'Api') ReactDOM.render(<Api />,document.getElementById('app'));
-    if (name === 'Table') ReactDOM.render(<Table />,document.getElementById('app'));
-    if (name === 'Gallery') ReactDOM.render(<Gallery />,document.getElementById('app'));
+    switch(name) {
+      case 'Api':
+        ReactDOM.render(<Api />,document.getElementById('app'));
+        break;
+      case 'Table':
+      case 'list':
+        ReactDOM.render(<Table />,document.getElementById('app'));
+        break;
+      case 'Gallery':
+      case 'grid':
+        ReactDOM.render(<Gallery />,document.getElementById('app'));
+        break;
+      default:
+        ReactDOM.render(<Api />,document.getElementById('app'));
+        break;
+    }
   };
 
   handleOpen() { this.setState({modalOpen: true}); }

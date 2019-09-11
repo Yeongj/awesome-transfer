@@ -1,10 +1,10 @@
 import React from 'react';
-import { Grid, Image, Card, Icon, Segment } from 'semantic-ui-react'
+import { Grid, Image, Card, Icon, Segment, Header } from 'semantic-ui-react'
 
 class Gallery extends React.Component {
   state = {
-    userInput: ['https://react.semantic-ui.com/images/wireframe/square-image.png', 'https://react.semantic-ui.com/images/wireframe/square-image.png'],
-    src: 'https://react.semantic-ui.com/images/wireframe/square-image.png'
+    userInput: ['http://localhost:3001/images/test.jpg', 'http://localhost:3001/images/test.jpg'],
+    src: 'http://localhost:3001/images/test.jpg'
   };
 
   constructor() {
@@ -12,9 +12,10 @@ class Gallery extends React.Component {
     this.renderImageGrid = this.renderImageGrid.bind(this)
   }
 
-  CardExampleCard = () => (
+  folderCard = () => (
     <Card>
-      <Image src='https://react.semantic-ui.com/images/wireframe/square-image.png' wrapped ui={false} />
+      <Icon fitted={true} name="folder" size='massive' height={150}></Icon>
+      {/* <Image src='http://localhost:3001/images/test.jpg' wrapped ui={false} /> */}
       {/* <Card.Content>
         <Card.Header>Matthew</Card.Header>
         <Card.Meta>
@@ -33,21 +34,45 @@ class Gallery extends React.Component {
     </Card>
   )
 
+  imageCard = () => (
+    <Card>
+      <Image src='http://localhost:3001/images/test.jpg' width={250}/>
+      <Card.Content extra>
+        <a>
+          <Icon name='user' />
+          22 Friends
+        </a>
+      </Card.Content>
+    </Card>
+  )
+
+  fileCard = () => (
+    <Card>
+      <Icon fitted={true} name="file" size='massive' width={200}></Icon>
+      <Card.Content extra>
+        <a>
+          <Icon name='user' />
+          22 Friends
+        </a>
+      </Card.Content>
+    </Card>
+  )
+
   CardExampleColumnCount = () => (
-    <Card.Group itemsPerRow={6}>
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
-      {this.CardExampleCard()}
+    <Card.Group stackable itemsPerRow={6}>
+      {this.folderCard()}
+      {this.folderCard()}
+      {this.folderCard()}
+      {this.imageCard()}
+      {this.imageCard()}
+      {this.imageCard()}
+      {this.imageCard()}
+      {this.imageCard()}
+      {this.imageCard()}
+      {this.fileCard()}
+      {this.fileCard()}
+      {this.fileCard()}
+      {this.fileCard()}
     </Card.Group>
   )
 
@@ -59,7 +84,7 @@ class Gallery extends React.Component {
 
   render() {
     return (
-      <Grid centered columns={6}>
+      <Grid container centered columns={6}>
         <Grid.Column width={12}>
           <Segment>
             {/* {this.renderImageGrid()} */}

@@ -1,17 +1,21 @@
 import React from 'react'
-import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image } from 'semantic-ui-react'
+import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Label } from 'semantic-ui-react'
 
 class myTable extends React.Component {
   state = {
     headerchecked: false,
     checked: false,
+    dirpath: [],
+    filesdetail: [],
+    hidefilesdetail : []
   }
 
   constructor() {
     super();
     this.handleHeaderChecked = this.handleHeaderChecked.bind(this); // set this, because you need get methods from CheckBox 
     this.toggle = this.toggle.bind(this);
-    this.renderRow = this.renderRow.bind(this);
+    this.handleFolderClick = this.handleFolderClick.bind(this);
+    this.handleListTypeClick = this.handleListTypeClick.bind(this);
   }
   
   handleHeaderChecked () {
@@ -21,57 +25,165 @@ class myTable extends React.Component {
      });
   }
 
+  handleChange(event) {
+    const target = Array.from(event.target.files)
+    // const value = target.type === 'checkbox' ? target.checked : target.value;
+    
+    var data = new FormData()
+    for (const file of target) {
+      data.append('files',file,file.name)
+    }
+
+    fetch('http://localhost:3001/upload', {
+      method: 'POST',
+      body: data
+    })
+}
+
   toggle () { 
     this.setState(prevState => ({ checked: !prevState.checked })) 
   }
 
-  callAPI() {
-    fetch("http://localhost:3001/getVolumeList?src=/images")
+  callAPI(route='/') {
+    fetch("http://localhost:3001/getVolumeList?src="+route)
         .then(res => res.json())
-        .then(res => this.setState({ apiResponse: res }))
-        .then(res => this.render());
+        .then(res => {
+          if (Object.keys(res)[0].length > 0) {
+            this.setState({ 
+              dirpath: Object.keys(res)[0].split('/'),
+              filesdetail: Object.values(res)[0],
+              hidefilesdetail: []
+            })
+            console.log(this.state)
+          }
+        })
   }
 
   componentDidMount() {
     this.callAPI();
   }
 
-  renderFolder(item) {
-    if (!this.state.apiResponse) return (<Table.Row></Table.Row>)
-    var dirpath = Object.keys(this.state.apiResponse)[0].split('/');
+  handleFolderClick(e, data) {
+    if (data) {
+      console.log('DATA.NAME', data.name)
+      if (data.name) this.callAPI(data.name);
+    } else {
+      if (e.currentTarget.name) {
+        this.state.dirpath.push(e.currentTarget.name);
+        this.setState({dirpath: this.state.dirpath});
+        console.log('currentTarget', this.state.dirpath);
+        this.callAPI(this.state.dirpath.join('/'));
+      }
+    }
+  }
+
+  handleListTypeClick(e, {name}) {
+    if (name !== 'all') {
+      let hide = [];
+      this.setState({
+        filesdetail: this.state.filesdetail.concat(this.state.hidefilesdetail).filter( detail =>  {
+          if (name === 'file') {
+            if (detail.type !== 'o') {
+              hide.push(detail);
+            } else {
+              return detail.type === 'o'
+            }
+          };
+          if (name === 'image') {
+            if (detail.type !== 'i') {
+              hide.push(detail);
+            } else {
+              return detail.type === 'i'
+            }
+          };
+          if (name === 'imagevideo') {
+            if (detail.type !== 'i') {
+              hide.push(detail);
+            } else {
+              return detail.type === 'i'
+            }
+          };
+        }),
+        hidefilesdetail: hide,
+      })
+    } else {
+      this.setState({
+        filesdetail: this.state.filesdetail.concat(this.state.hidefilesdetail),
+        hidefilesdetail : []
+      })
+    }
+  }
+
+  renderEdit() {
+    if (!this.state.dirpath) return (<Table.Row></Table.Row>)
     return (
       <Table.Row>
         <Table.HeaderCell colSpan='12'>
-        <Breadcrumb>
-          {this.renderFolderRoute(dirpath)}
-        </Breadcrumb>
+        <Button.Group floated='left'>
+          <Button name='all' onClick={this.handleListTypeClick}>All</Button>
+          <Button.Or />
+          <Button name='file' onClick={this.handleListTypeClick}>Files Only</Button>
+          <Button.Or />
+          <Button name='image' onClick={this.handleListTypeClick}>Images Only</Button>
+          <Button.Or />
+          <Button name='imagevideo' onClick={this.handleListTypeClick}>Images and Video</Button>
+        </Button.Group>
         <Button.Group floated='right'>
-          <Button>All</Button>
-          <Button.Or />
-          <Button>Files Only</Button>
-          <Button.Or />
-          <Button>Images Only</Button>
+          <input id="file" type="file" onChange={this.handleChange.bind(this)} required multiple />
+          <Button name='upload' onClick={this.handleLoadClick}>Upload</Button>
+          <Button name='download' onClick={this.handleLoadClick}>Download</Button>
+          <form ref='uploadForm' 
+                id='uploadForm' 
+                action='http://localhost:3001/upload' 
+                method='post' 
+                encType="multipart/form-data">
+                    <input name="foo" type="file" multiple/>
+                    <input type='submit' value='Upload!' />
+                </form>
         </Button.Group>
         </Table.HeaderCell>
       </Table.Row>)
   }
 
-  renderFolderRoute(dirpath) {
-    let result = [];
-    dirpath.forEach((item, i) => {
-      if (i === dirpath.length-1) { 
-        result.push(<Breadcrumb.Section key={i} active>{item}</Breadcrumb.Section>)
-        return result;
-      }
-      result.push(<Breadcrumb.Section key={i} link>{item}</Breadcrumb.Section>)
-      result.push(<Breadcrumb.Divider key={'d'+i}/>)
-      });
-    return result;
+  renderFolder() {
+    if (!this.state.dirpath) return (<Table.Row></Table.Row>)
+    return (
+      <Table.Row>
+        <Table.HeaderCell colSpan='12'>
+        <Breadcrumb>
+          {this.renderFolderRoute()}
+        </Breadcrumb>
+        {/* <Button.Group floated='right'>
+          <Button name='all' onClick={this.handleListTypeClick}>All</Button>
+          <Button.Or />
+          <Button name='file' onClick={this.handleListTypeClick}>Files Only</Button>
+          <Button.Or />
+          <Button name='image' onClick={this.handleListTypeClick}>Images Only</Button>
+          <Button.Or />
+          <Button name='imagevideo' onClick={this.handleListTypeClick}>Images and Video</Button>
+        </Button.Group> */}
+        </Table.HeaderCell>
+      </Table.Row>)
+  }
+
+  renderFolderRoute() {
+    if (this.state.dirpath.length > 0) {
+      return this.state.dirpath.map((item, i) => {
+        if (i === this.state.dirpath.length-1) { 
+          return (<Breadcrumb.Section key={i} active>{item}</Breadcrumb.Section>);
+        }
+        return ([<Breadcrumb.Section key={i} link name={this.state.dirpath.slice(0,i+1).join('/')} onClick={this.handleFolderClick}>{item}</Breadcrumb.Section>,
+      <Breadcrumb.Divider key={'d'+i}/>]);
+        });
+    } else {
+      return (<Breadcrumb.Divider/>)
+    }
   }
 
   renderHead() {
     return (
     <Table.Header>
+      {this.renderEdit()}
       {this.renderFolder()}
       <Table.Row>
         <Table.HeaderCell >
@@ -96,7 +208,7 @@ class myTable extends React.Component {
           <Header>
             <Icon name='folder' />
             <Header.Content>
-            <a href='#'>{item.name}</a>
+            <a href="javascript:void(0)" onClick={this.handleFolderClick} name={item.name}>{item.name}</a>
             </Header.Content>
           </Header>
         </Table.Cell>
@@ -114,9 +226,9 @@ class myTable extends React.Component {
         </Table.Cell>
         <Table.Cell >
           <Header>
-            <Image src='http://localhost:3001/images/test.jpg' rounded size='mini' /> 
+            <Image src={'http://localhost:3001/'+this.state.dirpath.slice(2,i+1).join('/')+'/'+item.name} rounded size='mini' /> 
             <Header.Content>
-            <a href='#'>{item.name}</a>
+            <a href='javascript:void(0)' download>{item.name}</a>
             </Header.Content>
           </Header>
         </Table.Cell>
@@ -136,7 +248,7 @@ class myTable extends React.Component {
           <Header>
             <Icon name='file' />
             <Header.Content>
-            <a href='#'>{item.name}</a>
+            {item.name}
             </Header.Content>
           </Header>
         </Table.Cell>
@@ -146,9 +258,8 @@ class myTable extends React.Component {
   }
 
   renderRow() {
-    if (!this.state.apiResponse) return 
-    var dirpath_arr = Object.values(this.state.apiResponse)[0];
-    return dirpath_arr.map((item, i) => {
+    if (!this.state.filesdetail) return
+    return this.state.filesdetail.map((item, i) => {
       switch (item.type) {
         case 'd':
           return this.renderFolderRow(item, i);

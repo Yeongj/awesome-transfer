@@ -12,7 +12,7 @@ const settings = require('./settings');
 
 app.use(cors());
 app.use(express.json())
-app.use(express.static(__dirname));
+app.use(express.static('/'));
 
 app.get('/', function(req, res, next) {
     res.send('Hello World!');
