@@ -1,5 +1,5 @@
 import React from 'react'
-import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Label } from 'semantic-ui-react'
+import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Label, Input, Form, Popup } from 'semantic-ui-react'
 
 class myTable extends React.Component {
   state = {
@@ -16,6 +16,9 @@ class myTable extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.handleFolderClick = this.handleFolderClick.bind(this);
     this.handleListTypeClick = this.handleListTypeClick.bind(this);
+    this.handleUploadClick = this.handleUploadClick.bind(this);
+    this.handleDownloadClick = this.handleDownloadClick.bind(this);
+    this.fileUploadRef = React.createRef();
   }
   
   handleHeaderChecked () {
@@ -25,16 +28,18 @@ class myTable extends React.Component {
      });
   }
 
-  handleChange(event) {
-    const target = Array.from(event.target.files)
-    // const value = target.type === 'checkbox' ? target.checked : target.value;
-    
+  handleDownloadClick() {
+
+  }
+
+  handleUploadClick(event) {
+    const files_arr = Array.from(event.target.files)    
     var data = new FormData()
-    for (const file of target) {
+    for (const file of files_arr) {
       data.append('files',file,file.name)
     }
 
-    fetch('http://localhost:3001/upload', {
+    fetch('http://localhost:3001/upload?src='+ this.state.dirpath.join('/'), {
       method: 'POST',
       body: data
     })
@@ -129,17 +134,17 @@ class myTable extends React.Component {
           <Button name='imagevideo' onClick={this.handleListTypeClick}>Images and Video</Button>
         </Button.Group>
         <Button.Group floated='right'>
-          <input id="file" type="file" onChange={this.handleChange.bind(this)} required multiple />
-          <Button name='upload' onClick={this.handleLoadClick}>Upload</Button>
-          <Button name='download' onClick={this.handleLoadClick}>Download</Button>
-          <form ref='uploadForm' 
-                id='uploadForm' 
-                action='http://localhost:3001/upload' 
-                method='post' 
-                encType="multipart/form-data">
-                    <input name="foo" type="file" multiple/>
-                    <input type='submit' value='Upload!' />
-                </form>
+        <Form>
+          <Popup
+            trigger={<Button icon="upload" onClick={()=>this.fileUploadRef.current.click()} />}
+            content='Upload!'
+            on='hover' />        
+          <input ref={this.fileUploadRef} type="file" multiple hidden onChange={this.handleUploadClick} />
+          <Popup
+            trigger={<Button name='download' onClick={this.handleDownloadClick} icon='download'></Button>}
+            content='Download!'
+            on='hover' />
+        </Form>
         </Button.Group>
         </Table.HeaderCell>
       </Table.Row>)
@@ -153,15 +158,6 @@ class myTable extends React.Component {
         <Breadcrumb>
           {this.renderFolderRoute()}
         </Breadcrumb>
-        {/* <Button.Group floated='right'>
-          <Button name='all' onClick={this.handleListTypeClick}>All</Button>
-          <Button.Or />
-          <Button name='file' onClick={this.handleListTypeClick}>Files Only</Button>
-          <Button.Or />
-          <Button name='image' onClick={this.handleListTypeClick}>Images Only</Button>
-          <Button.Or />
-          <Button name='imagevideo' onClick={this.handleListTypeClick}>Images and Video</Button>
-        </Button.Group> */}
         </Table.HeaderCell>
       </Table.Row>)
   }

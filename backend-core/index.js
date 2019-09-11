@@ -6,13 +6,12 @@ const fs = require('fs')
 
 const file = require('./file');
 const multer = require('multer');
-var upload = multer()
 
 const settings = require('./settings');
 
 app.use(cors());
 app.use(express.json())
-app.use(express.static('/'));
+app.use(express.static(__dirname));
 
 app.get('/', function(req, res, next) {
     res.send('Hello World!');
@@ -33,6 +32,7 @@ app.post('/settings', async function(req, res, next) {
 
 app.get('/getVolumeList', async function(req, res, next) {
     const {src='./'} = req.query;
+    console.log(src)
     res.send(await file.getVolumeList(src))
 })
 
@@ -66,21 +66,22 @@ app.get('/duplicate', function(req, res, next) {
     res.send('Hello World! duplicate')
 })
 
-var storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-      callback(null, './uploads');
-    },
-    filename: function (req, file, callback) {
-      callback(null, file.fieldname + '-' + Date.now());
-    }
-  });
-  
-  var upload = multer({ storage : storage }).any();
-
 app.post('/upload', function (req, res, next) {
+    const {src='./'} = req.query;
+    console.log(src)
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+          callback(null, src);
+        },
+        filename: function (req, file, callback) {
+          callback(null, file.originalname);
+        }
+      });
+      
+    var upload = multer({ storage : storage }).any();
+
     upload(req,res,function(err) {
-        //console.log(req.body);
-        //console.log(req.files);
+        console.log(req.files);
         if(err) {
             console.log(err)
             return res.end("Error uploading file.");
@@ -99,7 +100,6 @@ app.get('/download', function(req, res, next) {
     //     }
     //   });
     res.sendFile(__dirname + "/package.json");
-    // res.send('Hello World! download')
 })
 
 app.listen(port, function() {
