@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./init.css";
 import ReactDOM from 'react-dom';
+import FilePlayer from 'react-player/lib/players/FilePlayer'
 
 class Init extends Component {
     constructor(props) {
@@ -10,7 +11,15 @@ class Init extends Component {
     }
 
     render() {
-        return (
+        return [(
+            <FilePlayer
+                url='http://localhost:3001/images/FILE0019.mov'
+                light={true}
+                volume={1}
+                controls={true}
+                fileconfig={{forceVideo:true}}
+                />
+        ),(
             <div className="App">
                 <header className="App-header">
                     <img src={logo} className="App-logo" alt="logo" />
@@ -29,7 +38,7 @@ class Init extends Component {
                     <input type="file" name="avatar" multiple/>
                 </form> */}
             </div>
-        );
+        )]
     }
 }
 

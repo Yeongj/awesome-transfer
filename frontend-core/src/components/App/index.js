@@ -7,6 +7,7 @@ import MenuHeader from '../Navbar';
 import Api from '../Init';
 import Table from '../Table';
 import Gallery from "../Gallery";
+import Settings from "../Settings";
 
 class App extends Component {
   render() {
@@ -17,6 +18,7 @@ class App extends Component {
         <Route path="/Api" component={Api}/>
         <Route path="/Table" component={Table} />
         <Route path="/Gallery" component={Gallery} />
+        <Route path="/Settings" component={Settings} />
       </HashRouter>
     );
   }

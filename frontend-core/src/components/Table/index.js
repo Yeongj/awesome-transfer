@@ -1,5 +1,6 @@
 import React from 'react'
-import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Label, Input, Form, Popup } from 'semantic-ui-react'
+import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Form, Popup, Modal } from 'semantic-ui-react'
+import FilePlayer from 'react-player/lib/players/FilePlayer'
 
 class myTable extends React.Component {
   state = {
@@ -19,7 +20,16 @@ class myTable extends React.Component {
     this.handleUploadClick = this.handleUploadClick.bind(this);
     this.handleDownloadClick = this.handleDownloadClick.bind(this);
     this.fileUploadRef = React.createRef();
+    this.handleVideoModalOpen = this.handleVideoModalOpen.bind(this);
+    this.handleVideoModalClose = this.handleVideoModalClose.bind(this);
+    this.handleImageModalOpen = this.handleImageModalOpen.bind(this);
+    this.handleImageModalClose = this.handleImageModalClose.bind(this);
   }
+
+  handleVideoModalOpen() { this.setState({videoModalOpen: true}); }
+  handleVideoModalClose() { this.setState({videoModalOpen: false}); }
+  handleImageModalOpen() { this.setState({imageModalOpen: true}); }
+  handleImageModalClose() { this.setState({imageModalOpen: false}); }
   
   handleHeaderChecked () {
     this.setState({ 
@@ -29,7 +39,17 @@ class myTable extends React.Component {
   }
 
   handleDownloadClick() {
-
+    fetch('http://localhost:3001/download')
+      .then(response => {
+        const filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+        response.blob().then(blob => {
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+      });
+    });
   }
 
   handleUploadClick(event) {
@@ -82,6 +102,60 @@ class myTable extends React.Component {
     }
   }
 
+  renderImageModal(e, data) {
+    return (
+      <div>
+        <Modal basic centered open={this.state.imageModalOpen}
+          onClose={this.handleImageModalClose}
+          closeIcon='close'
+          size={'fullscreen'}
+        >
+          <Header icon='video' content='Video' />
+          <Modal.Content>
+          <image src=''></image>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button basic color='red' inverted onClick={this.handleImageModalClose}>
+              <Icon name='remove' /> No
+            </Button>
+            <Button color='green' inverted>
+              <Icon name='checkmark' /> Yes
+            </Button>
+          </Modal.Actions>
+        </Modal>
+      </div>)
+  }
+
+  renderVideoModal(e, data) {
+    return (
+      <div>
+        <Modal basic centered open={this.state.videoModalOpen}
+          onClose={this.handleVideoModalClose}
+          closeIcon='close'
+          size={'fullscreen'}
+        >
+          <Header icon='video' content='Video' />
+          <Modal.Content>
+          <FilePlayer
+                url='http://localhost:3001/images/FILE0019.mov'
+                light={true}
+                volume={1}
+                controls={true}
+                fileconfig={{forceVideo:true}}
+                />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button basic color='red' inverted onClick={this.handleVideoModalClose}>
+              <Icon name='remove' /> No
+            </Button>
+            <Button color='green' inverted>
+              <Icon name='checkmark' /> Yes
+            </Button>
+          </Modal.Actions>
+        </Modal>
+      </div>)
+  }
+
   handleListTypeClick(e, {name}) {
     if (name !== 'all') {
       let hide = [];
@@ -91,21 +165,21 @@ class myTable extends React.Component {
             if (detail.type !== 'o') {
               hide.push(detail);
             } else {
-              return detail.type === 'o'
+              return true
             }
           };
           if (name === 'image') {
             if (detail.type !== 'i') {
               hide.push(detail);
             } else {
-              return detail.type === 'i'
+              return true
             }
           };
           if (name === 'imagevideo') {
-            if (detail.type !== 'i') {
-              hide.push(detail);
+            if (detail.type === 'i' || detail.type === 'v') {
+              return true
             } else {
-              return detail.type === 'i'
+              hide.push(detail);
             }
           };
         }),
@@ -212,7 +286,27 @@ class myTable extends React.Component {
       </Table.Row>
     )
   }
-  renderPhotoRow(item, i) {
+  renderVideoRow(item, i) {
+    const { checked } = this.state
+
+    return (
+      <Table.Row key={i} textAlign='center'>
+        <Table.Cell collapsing>
+          <Checkbox name='rowCheckBox' checked={checked} onClick={this.toggle}/>
+        </Table.Cell>
+        <Table.Cell >
+          <Header>
+          <Icon name='video' />
+            <Header.Content>
+            <a href='javascript:void(0)' onClick={this.handleVideoModalOpen}>{item.name}</a>
+            </Header.Content>
+          </Header>
+        </Table.Cell>
+        <Table.Cell>{item.create}</Table.Cell>
+      </Table.Row>
+    )
+  }
+  renderImageRow(item, i) {
     const { checked } = this.state
 
     return (
@@ -224,7 +318,7 @@ class myTable extends React.Component {
           <Header>
             <Image src={'http://localhost:3001/'+this.state.dirpath.slice(2,i+1).join('/')+'/'+item.name} rounded size='mini' /> 
             <Header.Content>
-            <a href='javascript:void(0)' download>{item.name}</a>
+            <a href='javascript:void(0)' onClick={this.handleImageModalOpen}>{item.name}</a>
             </Header.Content>
           </Header>
         </Table.Cell>
@@ -260,9 +354,9 @@ class myTable extends React.Component {
         case 'd':
           return this.renderFolderRow(item, i);
         case 'i':
-          return this.renderPhotoRow(item, i);
+          return this.renderImageRow(item, i);
         case 'v':
-          return this.renderPhotoRow(item, i);
+          return this.renderVideoRow(item, i);
         default:
           return this.renderOthersRow(item, i);
       }
@@ -282,6 +376,8 @@ class myTable extends React.Component {
       <Grid centered>
         <Grid.Column width={12}>
           <Segment>
+          {this.renderVideoModal()}
+          {this.renderImageModal()}
             <Table celled structured>
               {this.renderHead()}
               {this.renderBody()}

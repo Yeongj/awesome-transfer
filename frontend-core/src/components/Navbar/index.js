@@ -4,6 +4,7 @@ import { Menu, Icon, Modal, Header, Button, Popup } from 'semantic-ui-react'
 import Table from '../Table';
 import Gallery from '../Gallery';
 import Api from '../Init';
+import Settings from '../Settings';
 
 class Navbar extends Component {
   state = {
@@ -31,6 +32,9 @@ class Navbar extends Component {
       case 'grid':
         ReactDOM.render(<Gallery />,document.getElementById('app'));
         break;
+      case 'Settings':
+          ReactDOM.render(<Settings />,document.getElementById('app'));
+          break;
       default:
         ReactDOM.render(<Api />,document.getElementById('app'));
         break;
@@ -140,6 +144,17 @@ class Navbar extends Component {
           <Popup
             trigger={<Icon name="grid layout"></Icon>}
             content="grid"
+            basic
+          />
+        </Menu.Item>
+
+        <Menu.Item
+          name='Settings'
+          onClick={this.handleItemClick}
+        >
+          <Popup
+            trigger={<Icon name="setting layout"></Icon>}
+            content="Settings"
             basic
           />
         </Menu.Item>
