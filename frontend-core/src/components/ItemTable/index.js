@@ -1,8 +1,9 @@
 import React from 'react'
 import { Header, Segment, Grid, Icon, Table, Checkbox, Button, Breadcrumb, Image, Form, Popup, Modal } from 'semantic-ui-react'
 import FilePlayer from 'react-player/lib/players/FilePlayer'
+import "./ItemTable.css";
 
-class myTable extends React.Component {
+class ItemTable extends React.Component {
   state = {
     headerchecked: false,
     checked: false,
@@ -135,7 +136,7 @@ class myTable extends React.Component {
           size={'fullscreen'}
         >
           <Header icon='video' content='Video' />
-          <Modal.Content>
+          <Modal.Content centered>
           <FilePlayer
                 url='http://localhost:3001/images/FILE0019.mov'
                 light={true}
@@ -193,6 +194,14 @@ class myTable extends React.Component {
     }
   }
 
+  handlelistgridClick(e, {name}) {
+    if (name === 'list') {
+      console.log(name)
+    } else {
+      console.log(name)
+    }
+  }
+
   renderEdit() {
     if (!this.state.dirpath) return (<Table.Row></Table.Row>)
     return (
@@ -210,12 +219,24 @@ class myTable extends React.Component {
         <Button.Group floated='right'>
         <Form>
           <Popup
+            trigger={<Button name='list' onClick={this.handlelistgridClick} icon='list'></Button>}
+            key='list'
+            content='List!'
+            on='hover' />
+          <Popup
+            trigger={<Button name='grid' onClick={this.handlelistgridClick} icon='grid layout'></Button>}
+            key='grid'
+            content='Grid!'
+            on='hover' />  
+          <Popup
             trigger={<Button icon="upload" onClick={()=>this.fileUploadRef.current.click()} />}
+            key='upload'
             content='Upload!'
             on='hover' />        
           <input ref={this.fileUploadRef} type="file" multiple hidden onChange={this.handleUploadClick} />
           <Popup
             trigger={<Button name='download' onClick={this.handleDownloadClick} icon='download'></Button>}
+            key='upload'
             content='Download!'
             on='hover' />
         </Form>
@@ -255,16 +276,6 @@ class myTable extends React.Component {
     <Table.Header>
       {this.renderEdit()}
       {this.renderFolder()}
-      <Table.Row>
-        <Table.HeaderCell >
-        <Button compact="true" size='small' floated='right' onClick={this.handleHeaderChecked}>
-          Select All
-        </Button>
-        </Table.HeaderCell>
-        {/* <Table.HeaderCell compact="true">Type</Table.HeaderCell> */}
-        <Table.HeaderCell >Name</Table.HeaderCell>
-        <Table.HeaderCell >Options</Table.HeaderCell>
-      </Table.Row>
     </Table.Header>)
   }
   
@@ -363,30 +374,44 @@ class myTable extends React.Component {
     })
   }
 
-  renderBody() {
+  renderTableBody() {
     return (
+      <Table celled structured>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell >
+          <Button compact="true" size='small' floated='right' onClick={this.handleHeaderChecked}>
+            Select All
+          </Button>
+          </Table.HeaderCell>
+          {/* <Table.HeaderCell compact="true">Type</Table.HeaderCell> */}
+          <Table.HeaderCell >Name</Table.HeaderCell>
+          <Table.HeaderCell >Options</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
       <Table.Body>
         {this.renderRow()}
       </Table.Body>
+      </Table>
       )
   }
 
   render() {
-    return (
+    return [
+      this.renderVideoModal(),
+      this.renderImageModal(),(
       <Grid centered>
-        <Grid.Column width={12}>
-          <Segment>
-          {this.renderVideoModal()}
-          {this.renderImageModal()}
-            <Table celled structured>
-              {this.renderHead()}
-              {this.renderBody()}
+        <Grid.Column width={15}>
+          <Table celled structured>
+            {this.renderHead()}
             </Table>
-          </Segment>
+          {/* <Segment> */}
+            {this.renderTableBody()}
+          {/* </Segment> */}
         </Grid.Column>
       </Grid>
-    )
+    )]
   }
 }
 
-export default myTable;
+export default ItemTable;
